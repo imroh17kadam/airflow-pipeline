@@ -1,22 +1,11 @@
-# ===============================
-# Airflow Helm Chart Values File
-# ===============================
-
-# Use Celery Executor for distributed tasks
 executor: CeleryExecutor
 
-# -------------------------------
-# Airflow Image Configuration
-# -------------------------------
 airflow:
   image:
-    repository: etl-airflow       # Your Docker image with src installed
+    repository: etl-airflow
     tag: 0.1
     pullPolicy: IfNotPresent
 
-# -------------------------------
-# DAGs Configuration using git-sync
-# -------------------------------
 dags:
   gitSync:
     enabled: true
@@ -25,31 +14,16 @@ dags:
     depth: 1
     subPath: ""
     wait: 30
-    # remove mountPath
-    syncDir: /opt/airflow/dags
 
-# -------------------------------
-# PostgreSQL Configuration
-# -------------------------------
 postgresql:
-  enabled: false   # Using external Postgres
-# If you want to use Helm Postgres, set enabled: true
+  enabled: false
 
-# -------------------------------
-# Redis Configuration
-# -------------------------------
 redis:
-  enabled: false   # Using external Redis
+  enabled: false
 
-# -------------------------------
-# Number of worker replicas
-# -------------------------------
 workers:
   replicas: 2
 
-# -------------------------------
-# Airflow Environment Variables
-# -------------------------------
 env:
   - name: AIRFLOW__CORE__FERNET_KEY
     value: "YOUR_FERNET_KEY_HERE"
@@ -60,25 +34,16 @@ env:
   - name: AIRFLOW__CELERY__BROKER_URL
     value: "redis://:<REDIS_PASSWORD>@<REDIS_SERVICE>:6379/0"
 
-# -------------------------------
-# Scheduler and Webserver
-# -------------------------------
 scheduler:
   replicas: 1
 webserver:
   replicas: 1
 
-# -------------------------------
-# Optional: Persistence for logs
-# -------------------------------
 logs:
   persistence:
     enabled: true
     size: 1Gi
 
-# -------------------------------
-# Optional: Additional Configurations
-# -------------------------------
 config:
   AIRFLOW__CORE__LOAD_EXAMPLES:
     value: false
