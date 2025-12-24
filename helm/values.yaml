@@ -23,8 +23,7 @@ redis:
 
 # Top-level data section required for external Redis
 data:
-  brokerUrlSecretName: airflow-redis-broker
-  brokerUrlSecretKey: broker-url
+  brokerUrlSecretName: airflow-redis-broker  # only this line is needed
 
 workers:
   replicas: 2
