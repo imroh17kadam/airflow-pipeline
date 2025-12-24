@@ -42,7 +42,11 @@ logs:
     size: 1Gi
 
 config:
-  AIRFLOW__CORE__FERNET_KEY: "FGRMRtlQjlffmlrFfW3KvbZuNSU3sqAkJ-KEkgyjeq8="
-  AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: "postgresql+psycopg2://airflow:airflow@postgres:5432/airflow"
-  AIRFLOW__CORE__LOAD_EXAMPLES: "False"
-  AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "True"
+  AIRFLOW__CORE__FERNET_KEY:
+    value: "FGRMRtlQjlffmlrFfW3KvbZuNSU3sqAkJ-KEkgyjeq8="
+  AIRFLOW__DATABASE__SQL_ALCHEMY_CONN:
+    value: "postgresql+psycopg2://airflow:airflow@postgres:5432/airflow"
+  AIRFLOW__CORE__LOAD_EXAMPLES:
+    value: "False"
+  AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION:
+    value: "True"
