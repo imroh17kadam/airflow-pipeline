@@ -20,7 +20,7 @@ airflow:
 dags:
   gitSync:
     enabled: true
-    repo: "https://github.com/<your-github-username>/airflow-dags.git"
+    repo: "https://github.com/imroh17kadam/airflow-pipeline.git"
     branch: "main"
     rev: ""                # optional, leave empty for latest
     depth: 1
