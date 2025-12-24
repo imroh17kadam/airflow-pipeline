@@ -22,8 +22,8 @@ redis:
   enabled: false
 
 celery:
-  brokerUrlSecretName: airflow-redis
-  brokerUrlSecretKey: REDIS_PASSWORD
+  brokerUrlSecretName: airflow-redis-broker
+  brokerUrlSecretKey: broker-url
 
 workers:
   replicas: 2
