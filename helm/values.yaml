@@ -28,6 +28,18 @@ env:
   - name: AIRFLOW__CORE__EXECUTOR
     value: "CeleryExecutor"
 
+redis:
+  enabled: true
+  password: airflow
+  # If using external redis, set enabled: false
+
+data:
+  # Option 1: use existing secret
+  # brokerUrlSecretName: airflow-redis-broker
+
+  # Option 2: use direct URL
+  brokerUrl: "redis://:airflow@airflow-redis:6379/0"
+  
 scheduler:
   replicas: 1
 webserver:
@@ -38,8 +50,6 @@ logs:
     enabled: true
     size: 1Gi
 
-data:
-  brokerUrlSecretName: ""  # optional
 config:
   AIRFLOW__CORE__FERNET_KEY:
     value: "FGRMRtlQjlffmlrFfW3KvbZuNSU3sqAkJ-KEkgyjeq8="
