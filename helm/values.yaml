@@ -21,20 +21,15 @@ postgresql:
 redis:
   enabled: false
 
-# Top-level data section required for external Redis
 data:
-  brokerUrlSecretName: airflow-redis-broker  # only this line is needed
+  brokerUrlSecretName: airflow-redis-broker
 
 workers:
   replicas: 2
 
 env:
-  - name: AIRFLOW__CORE__FERNET_KEY
-    value: "YOUR_FERNET_KEY_HERE"
   - name: AIRFLOW__CORE__EXECUTOR
     value: "CeleryExecutor"
-  - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
-    value: "postgresql+psycopg2://airflow:<POSTGRES_PASSWORD>@<POSTGRES_SERVICE>:5432/airflow"
 
 scheduler:
   replicas: 1
@@ -47,7 +42,7 @@ logs:
     size: 1Gi
 
 config:
-  AIRFLOW__CORE__LOAD_EXAMPLES:
-    value: false
-  AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION:
-    value: true
+  AIRFLOW__CORE__FERNET_KEY: "FGRMRtlQjlffmlrFfW3KvbZuNSU3sqAkJ-KEkgyjeq8="
+  AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: "postgresql+psycopg2://airflow:airflow@postgres:5432/airflow"
+  AIRFLOW__CORE__LOAD_EXAMPLES: "False"
+  AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "True"
