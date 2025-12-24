@@ -21,12 +21,12 @@ dags:
   gitSync:
     enabled: true
     repo: "https://github.com/imroh17kadam/airflow-pipeline.git"
-    branch: "main"
-    rev: ""                # optional, leave empty for latest
+    branch: "master"
     depth: 1
-    subPath: ""            # if DAGs are in a subfolder in repo
-    wait: 30               # seconds between syncs
-    mountPath: /opt/airflow/dags
+    subPath: ""
+    wait: 30
+    # remove mountPath
+    syncDir: /opt/airflow/dags
 
 # -------------------------------
 # PostgreSQL Configuration
@@ -80,5 +80,7 @@ logs:
 # Optional: Additional Configurations
 # -------------------------------
 config:
-  AIRFLOW__CORE__LOAD_EXAMPLES: "false"
-  AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
+  AIRFLOW__CORE__LOAD_EXAMPLES:
+    value: false
+  AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION:
+    value: true
