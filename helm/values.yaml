@@ -35,8 +35,6 @@ env:
     value: "CeleryExecutor"
   - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
     value: "postgresql+psycopg2://airflow:<POSTGRES_PASSWORD>@<POSTGRES_SERVICE>:5432/airflow"
-  - name: AIRFLOW__CELERY__BROKER_URL
-    value: "redis://:<REDIS_PASSWORD>@<REDIS_SERVICE>:6379/0"
 
 scheduler:
   replicas: 1
