@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   postgres:
     image: postgres:13
@@ -10,48 +8,80 @@ services:
     volumes:
       - postgres-db-volume:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "airflow"]
+      test: ["CMD-SHELL", "pg_isready -U airflow"]
       interval: 10s
       retries: 5
-    restart: always
 
-  airflow-webserver:
-    image: apache/airflow:2.8.1
+  airflow-init:
+    image: apache/airflow:2.8.1-python3.11
+    env_file:
+      - .env
     depends_on:
       postgres:
         condition: service_healthy
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
-      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
-      AIRFLOW__WEBSERVER__SECRET_KEY: mysecretkey123
-      AIRFLOW__CORE__FERNET_KEY: myfernetkey1234567890abcdef1234567890abcdef
+      AIRFLOW__WEBSERVER__SECRET_KEY: 566c1f8cd0195f8130c608e1b123479f
+    command: >
+      airflow db migrate
+    restart: "no"
+
+  airflow-user:
+    image: apache/airflow:2.8.1-python3.11
+    env_file:
+      - .env
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+    environment:
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+      AIRFLOW__WEBSERVER__SECRET_KEY: 566c1f8cd0195f8130c608e1b123479f
+    command: >
+      airflow users create
+      --username admin
+      --password admin
+      --firstname Admin
+      --lastname User
+      --role Admin
+      --email admin@example.com
+    restart: "no"
+
+  airflow-webserver:
+    image: apache/airflow:2.8.1-python3.11
+    env_file:
+      - .env
+    depends_on:
+      airflow-user:
+        condition: service_completed_successfully
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__WEBSERVER__SECRET_KEY: 566c1f8cd0195f8130c608e1b123479f
     volumes:
       - ./dags:/opt/airflow/dags
       - ./src:/opt/airflow/src
-      - ./requirements.txt:/opt/airflow/requirements.txt
     ports:
       - "8080:8080"
     command: webserver
-    restart: always
 
   airflow-scheduler:
-    image: apache/airflow:2.8.1
+    image: apache/airflow:2.8.1-python3.11
+    env_file:
+      - .env
     depends_on:
-      postgres:
-        condition: service_healthy
+      airflow-user:
+        condition: service_completed_successfully
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
-      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
-      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
-      AIRFLOW__WEBSERVER__SECRET_KEY: mysecretkey123
-      AIRFLOW__CORE__FERNET_KEY: myfernetkey1234567890abcdef1234567890abcdef
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+      AIRFLOW__WEBSERVER__SECRET_KEY: 566c1f8cd0195f8130c608e1b123479f
     volumes:
       - ./dags:/opt/airflow/dags
       - ./src:/opt/airflow/src
-      - ./requirements.txt:/opt/airflow/requirements.txt
     command: scheduler
-    restart: always
 
 volumes:
   postgres-db-volume:

@@ -1,21 +1,84 @@
+# ===============================
+# Airflow Helm Chart Values File
+# ===============================
+
+# Use Celery Executor for distributed tasks
 executor: CeleryExecutor
 
-images:
-  airflow:
-    repository: airflow-etl
-    tag: "1.0"
+# -------------------------------
+# Airflow Image Configuration
+# -------------------------------
+airflow:
+  image:
+    repository: etl-airflow       # Your Docker image with src installed
+    tag: 0.1
     pullPolicy: IfNotPresent
 
-postgresql:
-  enabled: true
-
-redis:
-  enabled: true
-
+# -------------------------------
+# DAGs Configuration using git-sync
+# -------------------------------
 dags:
-  persistence:
-    enabled: false
+  gitSync:
+    enabled: true
+    repo: "https://github.com/<your-github-username>/airflow-dags.git"
+    branch: "main"
+    rev: ""                # optional, leave empty for latest
+    depth: 1
+    subPath: ""            # if DAGs are in a subfolder in repo
+    wait: 30               # seconds between syncs
+    mountPath: /opt/airflow/dags
 
+# -------------------------------
+# PostgreSQL Configuration
+# -------------------------------
+postgresql:
+  enabled: false   # Using external Postgres
+# If you want to use Helm Postgres, set enabled: true
+
+# -------------------------------
+# Redis Configuration
+# -------------------------------
+redis:
+  enabled: false   # Using external Redis
+
+# -------------------------------
+# Number of worker replicas
+# -------------------------------
+workers:
+  replicas: 2
+
+# -------------------------------
+# Airflow Environment Variables
+# -------------------------------
+env:
+  - name: AIRFLOW__CORE__FERNET_KEY
+    value: "YOUR_FERNET_KEY_HERE"
+  - name: AIRFLOW__CORE__EXECUTOR
+    value: "CeleryExecutor"
+  - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
+    value: "postgresql+psycopg2://airflow:<POSTGRES_PASSWORD>@<POSTGRES_SERVICE>:5432/airflow"
+  - name: AIRFLOW__CELERY__BROKER_URL
+    value: "redis://:<REDIS_PASSWORD>@<REDIS_SERVICE>:6379/0"
+
+# -------------------------------
+# Scheduler and Webserver
+# -------------------------------
+scheduler:
+  replicas: 1
+webserver:
+  replicas: 1
+
+# -------------------------------
+# Optional: Persistence for logs
+# -------------------------------
+logs:
+  persistence:
+    enabled: true
+    size: 1Gi
+
+# -------------------------------
+# Optional: Additional Configurations
+# -------------------------------
 config:
-  core:
-    load_examples: false
+  AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+  AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"

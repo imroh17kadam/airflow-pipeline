@@ -1,6 +1,7 @@
 import sys
 sys.path.append("/opt/airflow")
 
+import os
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from datetime import datetime, timedelta
@@ -10,11 +11,11 @@ from src.load import load_data
 
 API_URL = "https://jsonplaceholder.typicode.com/todos"
 DB_CONFIG = {
-    "host": "postgres",
-    "database": "airflow",
-    "user": "airflow",
-    "password": "airflow",
-    "port": 5432
+    "host": os.environ.get("DB_HOST"),
+    "dbname": os.environ.get("DB_NAME"),     
+    "user": os.environ.get("DB_USER"),
+    "password": os.environ.get("DB_PASSWORD"),
+    "port": int(os.environ.get("DB_PORT", 5432))
 }
 
 default_args = {
