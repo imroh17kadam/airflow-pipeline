@@ -21,6 +21,10 @@ postgresql:
 redis:
   enabled: false
 
+celery:
+  brokerUrlSecretName: airflow-redis
+  brokerUrlSecretKey: REDIS_PASSWORD
+
 workers:
   replicas: 2
 
