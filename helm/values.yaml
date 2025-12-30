@@ -2,60 +2,75 @@ executor: CeleryExecutor
 
 airflow:
   image:
-    repository: apache/airflow
-    tag: 2.7.1
-    pullPolicy: IfNotPresent
+    repository: roh17kadam/airflow-etl
+    tag: latest
+    pullPolicy: Always
+
+  config:
+    AIRFLOW__CORE__LOAD_EXAMPLES: "False"
+    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "True"
+    AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags
 
 dags:
   gitSync:
-    enabled: true
-    repo: "https://github.com/imroh17kadam/airflow-pipeline.git"
-    branch: "master"
-    depth: 1
-    subPath: ""
-    wait: 30
+    enabled: false
 
 postgresql:
-  enabled: false
-
-redis:
-  enabled: false
-
-workers:
-  replicas: 2
-
-env:
-  - name: AIRFLOW__CORE__EXECUTOR
-    value: "CeleryExecutor"
+  enabled: true
+  auth:
+    username: airflow
+    password: airflow
+    database: airflow
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 250m
+    limits:
+      memory: 512Mi
+      cpu: 500m
 
 redis:
   enabled: true
   password: airflow
-  # If using external redis, set enabled: false
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 250m
+    limits:
+      memory: 512Mi
+      cpu: 500m
 
-data:
-  # Option 1: use existing secret
-  # brokerUrlSecretName: airflow-redis-broker
+workers:
+  replicas: 2
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 250m
+    limits:
+      memory: 512Mi
+      cpu: 500m
 
-  # Option 2: use direct URL
-  brokerUrl: "redis://:airflow@airflow-redis:6379/0"
-  
 scheduler:
   replicas: 1
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 250m
+    limits:
+      memory: 512Mi
+      cpu: 500m
+
 webserver:
   replicas: 1
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 250m
+    limits:
+      memory: 512Mi
+      cpu: 500m
 
 logs:
   persistence:
     enabled: true
     size: 1Gi
-
-config:
-  AIRFLOW__CORE__FERNET_KEY:
-    value: "FGRMRtlQjlffmlrFfW3KvbZuNSU3sqAkJ-KEkgyjeq8="
-  AIRFLOW__DATABASE__SQL_ALCHEMY_CONN:
-    value: "postgresql+psycopg2://airflow:airflow@airflow-postgresql:5432/airflow"
-  AIRFLOW__CORE__LOAD_EXAMPLES:
-    value: "False"
-  AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION:
-    value: "True"
